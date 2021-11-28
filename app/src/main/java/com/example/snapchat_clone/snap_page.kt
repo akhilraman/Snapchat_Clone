@@ -69,22 +69,18 @@ class snap_page : AppCompatActivity() {
             Toast.makeText(this, "fail", Toast.LENGTH_SHORT).show()
         }.addOnSuccessListener { taskSnapshot ->
             // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-
             val result = taskSnapshot.metadata!!.reference!!.downloadUrl
             result.addOnSuccessListener { uri ->
-                 var photoStringLink = uri.toString()
+                var photoStringLink = uri.toString()
                 var intent=Intent(this,ChooseUser::class.java)
                 intent.putExtra("imageURL",photoStringLink)
                 intent.putExtra("imageName",imageName)
                 intent.putExtra("message",captioneditText?.text.toString())
                 startActivity(intent)
                 println("here")
-                Toast.makeText(this, photoStringLink, Toast.LENGTH_SHORT).show()}
-
-
+                }
             //intent.putExtra("imageURL",photoStringLink)
             Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
-
             // ...
         }
 

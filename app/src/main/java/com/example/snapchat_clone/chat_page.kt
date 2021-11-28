@@ -3,8 +3,10 @@ package com.example.snapchat_clone
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
@@ -18,6 +20,8 @@ class chat_page : AppCompatActivity() {
     val mauth= FirebaseAuth.getInstance()
     var chatlistview:ListView?=null
     var emails:ArrayList<String> = ArrayList()
+
+    var snaps:ArrayList<DataSnapshot> = ArrayList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +37,7 @@ class chat_page : AppCompatActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 var email=snapshot.child("from").value.toString()
                 emails.add(email)
+                snaps.add(snapshot)
                 adapter.notifyDataSetChanged()
             }
 
@@ -41,6 +46,16 @@ class chat_page : AppCompatActivity() {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+
+                var index=0
+                for(snap:DataSnapshot in snaps){
+                    if(snap.key==snapshot.key){
+                        snaps.removeAt(index)
+                        emails.removeAt(index)
+                    }
+                    index++
+                }
+                adapter.notifyDataSetChanged()
 
             }
 
@@ -54,7 +69,17 @@ class chat_page : AppCompatActivity() {
 
         })
 
-        Toast.makeText(this, emails.toString(), Toast.LENGTH_SHORT).show()
+        chatlistview?.onItemClickListener=
+            AdapterView.OnItemClickListener{ adpterView, view, i, l->
+            val snapshot=snaps.get(i)
+            val intent= Intent(this,final_snap::class.java)
+            intent.putExtra("imageName",snapshot.child("imageName").value.toString())
+            Toast.makeText(this, snapshot.child("imageName").value.toString(), Toast.LENGTH_SHORT).show()
+            intent.putExtra("imageURL",snapshot.child("imageURL").value.toString())
+            intent.putExtra("message",snapshot.child("message").value.toString())
+            intent.putExtra("snapKey",snapshot.key.toString())
+            startActivity(intent)
+        }
 
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
