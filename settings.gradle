@@ -1,0 +1,2 @@
+rootProject.name = "Snapchat_clone"
+include ':app'
